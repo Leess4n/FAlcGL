@@ -16,6 +16,7 @@
 
 #include "FunctionRule.hxx"
 #include "FunctionRelation.hxx"
+#include "FunctionManager.hxx"
 #include "RecursiveFunctionRule.hxx"
 #include "RecursiveFunctionManager.hxx"
 
@@ -92,8 +93,52 @@ unsigned int indices[] = {  // note that we start from 0!
     2, 3, 0,
 };
 
+template<real T>
+class XNaive : public FunctionRule<T>
+{
+public:
+XNaive(const T sigma) : FunctionRule<T>(), sigma(sigma) {};
+    inline const T rule(FunctionRelation<T> **params, const unsigned int i) const override
+    {
+        return params[0]->getDomainElem(i)*params[1]->getDomainElem(i)*sigma;
+    }
+private:
+    const T sigma;
+};
+
 int main(int argc, char *argv[])
 {
+    FunctionManager<float, XNaive> X = FunctionManager<float, XNaive>(100, 100, 2.0f);
+    FunctionManager<float, XNaive> Y = FunctionManager<float, XNaive>(100, 100, 0.5f);
+    
+    unsigned int shape[2] = {100, 100};
+    FunctionRelation<float> *params[2] = {X.getRelation(), Y.getRelation()};
+
+    X.InitMultidimDomainFromInterval(0.0f, 100.0f, shape, 0, 2);
+    Y.InitMultidimDomainFromInterval(0.0f, 100.0f, shape, 1, 2);
+    for (int i=0;i<10000;i++)
+    {
+        X.modifyFromCurrent(i, params);
+        Y.modifyFromCurrent(i, params);
+    }
+    /*
+    // print them out
+    for (int i=0;i<10000;i++)
+    {
+        std::cout << X.getDomainElem(i) << "," << Y.getDomainElem(i) << " ";
+    }
+    // or put in file
+    std::ofstream SampleFile("lorentz_attractor.csv");
+    for (int i=0;i<10000;i++)
+    {
+        SampleFile << X.getImageElem(i) << "," << std::endl;
+    }
+
+    // close the file
+    SampleFile.close();
+    std::cout << "Creating file - DONE" << std::endl;
+    */
+
 	// Initialize glfw
 	glfwInit();
 
@@ -203,7 +248,7 @@ int main(int argc, char *argv[])
     defaultShader.setInt("faceTexture", 1);
     defaultShader.setFloat("faceness", faceness);
 
-    Camera camera = Camera(glm::vec3(0.0f, 0.0f, -3.0f), width, height);
+    Camera camera = Camera(glm::vec3(0.0f, 0.0f, -3.0f), wWidth, wHeight);
 
     glEnable(GL_DEPTH_TEST);
 
