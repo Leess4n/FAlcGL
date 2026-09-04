@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <iostream>
 
 #include "FunctionRule.hxx"
 #include "RecursiveFunctionRule.hxx"
@@ -19,9 +20,11 @@ public:
 
     // populate whole domain and image
     void populateDomainFromInterval(const T x0, const T x1);
+    void populateDomainFromSpacing(const T x0, const T dx);
+    void populateMultidimDomainFromInterval(const T x0, const T x1, unsigned int* shape, const unsigned int dim, unsigned int max_dims);
     void populateImageFromSimpleFunc(FunctionRule<T> &f);
     void populateImageFromSingleRecursiveFunc(RecursiveFunctionRule<T> &f, FunctionRelation<T> **func);
-    void modifyFromSimpleFunc(FunctionRule<T> &f, const unsigned int i);
+    inline void modifyFromSimpleFunc(FunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params);
     inline void modifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params);
     inline void modifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params);
  
@@ -40,7 +43,10 @@ public:
     inline void setDomainElem(const T x, const unsigned int i);
     inline void setImageElem(const T x, const unsigned int i);
 
-private:
+protected:
+    const int getSkip(unsigned int* shape, unsigned int dim, unsigned int max_dim) const;
+
+protected:
     // Declare domain and image of function as ptrs
     T **domain;
     T **image;

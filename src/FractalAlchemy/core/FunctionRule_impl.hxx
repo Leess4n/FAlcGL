@@ -7,7 +7,7 @@ inline const T FunctionRule<T>::operator()(const T x)
 template<real T>
 inline const T FunctionRule<T>::rule(FunctionRelation<T> **params, const unsigned int i) const
 {
-    return params[0]->getImageElem(i)+1;
+    return params[0]->getDomainElem(i)+1;
 }
 
 template <real T>

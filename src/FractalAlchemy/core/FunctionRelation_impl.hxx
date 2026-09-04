@@ -70,6 +70,49 @@ void FunctionRelation<T>::populateDomainFromInterval(const T x0, const T x1)
 }
 
 template<real T>
+void FunctionRelation<T>::populateDomainFromSpacing(const T x0, const T x1)
+{
+    for (unsigned int i=0; i<I; i++)
+    { 
+        for (unsigned int j=0; j<J; j++)
+        {
+            domain[i][j] = x0 + (dx*((i*(T)J)+j));
+        }
+    }
+
+    // domain is assigned
+    domainAssigned = true;
+    this->dx = dx;
+}
+
+template<real T>
+void FunctionRelation<T>::populateMultidimDomainFromInterval(const T x0, const T x1, unsigned int* shape, const unsigned int dim, unsigned int max_dims)
+{
+    int expected_elem_num = 1;
+    for (int i=0; i<max_dims; i++)
+    {
+        expected_elem_num *= shape[i];
+    }
+    if (I*J!=expected_elem_num)
+    {
+        std::cout << "calling err\n";
+        std::cerr << "Bad split of domain. The size of the domain " << I*J << " is not precisely the product of sizes along the specified directions " << expected_elem_num << std::endl;
+    }
+
+    const int count = shape[dim];
+    const int skip = getSkip(shape, dim, max_dims);
+    const T dx = (x1-x0)/(T)count;
+    for (unsigned int i=0; i<I*J; i++)
+    {
+        setDomainElem(x0 + (T)((T)dx*static_cast<int>(i/count)), (i * skip)%(I*J) + ((int)(i * skip)/(int)(I*J)));
+    }
+
+    // domain is assigned
+    domainAssigned = true;
+    this->dx = dx;
+}
+
+template<real T>
 void FunctionRelation<T>::populateImageFromSimpleFunc(FunctionRule<T> &f)
 {
     for (unsigned int i=0; i<I; i++)
@@ -100,6 +143,12 @@ void FunctionRelation<T>::populateImageFromSingleRecursiveFunc(RecursiveFunction
     }
 
     imageAssigned = true;
+}
+
+template<real T>
+inline void FunctionRelation<T>::modifyFromSimpleFunc(FunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
+{
+    setImageElem(f.rule(params, i), i);
 }
 
 template<real T>
@@ -178,4 +227,16 @@ template<real T>
 inline void FunctionRelation<T>::setImageElem(const T x, const unsigned int i)
 {
     image[(unsigned int)(i/J)][(unsigned int)(i%J)] = x;
+}
+
+template<real T>
+const int FunctionRelation<T>::getSkip(unsigned int* shape, unsigned int dim, unsigned int max_dim) const
+{
+    assert(max_dim>dim);
+    int skip = 1;
+    for(int i=0; i<dim; i++)
+    {
+        skip*=shape[i];
+    }
+    return skip;
 }

@@ -2,18 +2,19 @@ add_library(FractalAlchemy_Templates INTERFACE)
 
 # specify header files
 target_sources(FractalAlchemy_Templates INTERFACE
-                        FunctionRule.hxx
-                        FunctionRelation.hxx
-                        RecursiveFunctionRule.hxx
-                        RecursiveFunctionManager.hxx)
+                        core/FunctionRule.hxx
+                        core/FunctionRelation.hxx
+                        core/FunctionManager.hxx
+                        core/RecursiveFunctionRule.hxx
+                        core/RecursiveFunctionManager.hxx)
 
 add_library(FractalAlchemy
                     Utility.cpp
-                    VBO.cpp
-                    EBO.cpp
-                    VAO.cpp
-                    Shader.cpp
-                    Camera.cpp)
+                    display/VBO.cpp
+                    display/EBO.cpp
+                    display/VAO.cpp
+                    display/Shader.cpp
+                    display/Camera.cpp)
 
 include_directories(
     "${CMAKE_SOURCE_DIR}/include"

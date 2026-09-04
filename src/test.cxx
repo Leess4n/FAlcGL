@@ -14,17 +14,17 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stb_image.h>
 
-#include "FunctionRule.hxx"
-#include "FunctionRelation.hxx"
-#include "FunctionManager.hxx"
-#include "RecursiveFunctionRule.hxx"
-#include "RecursiveFunctionManager.hxx"
+#include "core/FunctionRule.hxx"
+#include "core/FunctionRelation.hxx"
+#include "core/FunctionManager.hxx"
+#include "core/RecursiveFunctionRule.hxx"
+#include "core/RecursiveFunctionManager.hxx"
 
-#include "VAO.h"
-#include "EBO.h"
-#include "VBO.h"
-#include "Shader.h"
-#include "Camera.h"
+#include "display/VAO.h"
+#include "display/EBO.h"
+#include "display/VBO.h"
+#include "display/Shader.h"
+#include "display/Camera.h"
 
 #include "RootDir.h"
 
@@ -121,12 +121,12 @@ int main(int argc, char *argv[])
         X.modifyFromCurrent(i, params);
         Y.modifyFromCurrent(i, params);
     }
-    /*
     // print them out
-    for (int i=0;i<10000;i++)
+    for (int i=0;i<100;i++)
     {
         std::cout << X.getDomainElem(i) << "," << Y.getDomainElem(i) << " ";
     }
+    /*
     // or put in file
     std::ofstream SampleFile("lorentz_attractor.csv");
     for (int i=0;i<10000;i++)
@@ -289,9 +289,7 @@ int main(int argc, char *argv[])
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // update faceness
-        defaultShader.setFloat("faceness", faceness);
+        // =======
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
