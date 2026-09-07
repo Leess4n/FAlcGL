@@ -46,7 +46,7 @@ FunctionManager<T, Function>::~FunctionManager()
 template<real T, template <real> class Function>
 void FunctionManager<T, Function>::ModifyFromCurrent(const unsigned int i, FunctionRelation<T> **params)
 {
-    modifyFromSimpleFunc(*rule, i, params);
+    this->ModifyFromSimpleFunc(*rule, i, params);
 }
 
 template <real T, template <real> class Function>

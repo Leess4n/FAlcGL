@@ -13,11 +13,12 @@ Class that manages a function rule and a function relation. In this way a functi
 its domain and image.
 */
 template<real T, template<real> class RecursiveFunction>
-requires std::derived_from<
-    RecursiveFunction<T>,
-    RecursiveFunctionRule<T>
->class RecursiveFunctionManager : public FunctionManager<T, RecursiveFunction>
+class RecursiveFunctionManager : public FunctionManager<T, RecursiveFunction>
 {
+    static_assert(
+        std::derived_from<RecursiveFunction<T>, RecursiveFunctionRule<T>>,
+        "RecursiveFunction must derive from RecursiveFunctionRule<T>"
+    );
 public:
     // Ctors
     RecursiveFunctionManager(RecursiveFunction<T> *rule);  // Initializes relation and rule parameters

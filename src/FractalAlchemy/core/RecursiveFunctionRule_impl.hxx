@@ -12,7 +12,6 @@ inline const T RecursiveFunctionRule<T>::next(FunctionRelation<T> **params, cons
     return params[0]->getImageElem(i)+1;
 }
 
-
 template<real T>
 const T RecursiveFunctionRule<T>::operator()(const T x, const T dx)
 {

@@ -100,7 +100,7 @@ public:
 XNaive(const T sigma) : FunctionRule<T>(), sigma(sigma) {};
     inline const T rule(FunctionRelation<T> **params, const unsigned int i) const override
     {
-        return params[0]->getDomainElem(i)*params[1]->getDomainElem(i)*sigma;
+        return params[0]->GetDomainElem(i)*params[1]->GetDomainElem(i)*sigma;
     }
 private:
     const T sigma;

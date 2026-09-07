@@ -7,7 +7,7 @@ RecursiveFunctionManager<T, RecursiveFunction>::RecursiveFunctionManager(Recursi
 template<real T, template <real> class RecursiveFunction>
 template<typename... Args>
 RecursiveFunctionManager<T, RecursiveFunction>::RecursiveFunctionManager(size_t I, size_t J, const T x0, Args... args)
-: FunctionManager<T>(I, J)
+: FunctionManager<T, RecursiveFunction>(I, J)
 {
     // create desired objects
     rule = new RecursiveFunction<T>(x0, args...);
@@ -18,7 +18,7 @@ RecursiveFunctionManager<T, RecursiveFunction>::RecursiveFunctionManager(size_t 
 template<real T, template <real> class RecursiveFunction>
 template<typename... Args>
 RecursiveFunctionManager<T, RecursiveFunction>::RecursiveFunctionManager(size_t I, size_t J, T **domain, const T x0, Args... args)
-: FunctionManager<T>(I, J, domain)
+: FunctionManager<T, RecursiveFunction>(I, J, domain)
 {
     // create objects giving the specified domain
     rule = new RecursiveFunction<T>(x0, args...);

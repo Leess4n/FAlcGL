@@ -109,7 +109,7 @@ void FunctionRelation<T>::PopulateMultidimDomainFromInterval(const T x0, const T
     const T dx = (x1-x0)/(T)count;
     for (unsigned int i=0; i<I*J; i++)
     {
-        setDomainElem(x0 + (T)((T)dx*static_cast<int>(i/count)), (i * skip)%(I*J) + ((int)(i * skip)/(int)(I*J)));
+        this->SetDomainElem(x0 + (T)((T)dx*static_cast<int>(i/count)), (i * skip)%(I*J) + ((int)(i * skip)/(int)(I*J)));
     }
 
     // domain is assigned
@@ -163,14 +163,14 @@ template <real T>
 inline void FunctionRelation<T>::ModifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
     // set image element using specified index
-    setImageElem(f.getFromPreviousInImage(params, i), i);
+    this->SetImageElem(f.getFromPreviousInImage(params, i), i);
 }
 
 template<real T>
 inline void FunctionRelation<T>::ModifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
     // set image element using the last element in the image
-    setImageElem(f.getFromPreviousInImage(params, (unsigned int)(I*J)), i);
+    this->SetImageElem(f.getFromPreviousInImage(params, (unsigned int)(I*J)), i);
 }
 
 template<real T>
