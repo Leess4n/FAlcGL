@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(FATest VERSION 0.1)
+project(FAlcGL VERSION 0.1)
 
 # link /lib directory
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-# create interface library to give both FATest and FractalAlchemy the compiler features
+# create interface library to give both FAlcGL and FractalAlchemy the compiler features
 add_library(FA_compiler_flags INTERFACE)
 target_compile_features(FA_compiler_flags INTERFACE cxx_std_20)
 
@@ -17,7 +17,7 @@ configure_file(src/helpers/RootDir.h.in src/helpers/RootDir.h)
 include_directories(${CMAKE_BINARY_DIR}/src/helpers)
 
 # add the executable and the source of it
-add_executable(FATest ${CMAKE_SOURCE_DIR}/src/test.cxx)
+add_executable(FAlcGL ${CMAKE_SOURCE_DIR}/src/test.cxx)
 
 # setting module path for module finding
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")

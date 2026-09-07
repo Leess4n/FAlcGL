@@ -6,14 +6,9 @@ RecursiveFunctionRule<T>::RecursiveFunctionRule(const T x0)
 }
 
 template<real T>
-inline const T RecursiveFunctionRule<T>::next(const T x) const
+inline const T RecursiveFunctionRule<T>::next(FunctionRelation<T> **params, const unsigned int i) const
 {
-    return x+1;
-}
-
-template<real T>
-inline const T RecursiveFunctionRule<T>::rule(FunctionRelation<T> **params, const unsigned int i) const
-{
+    // placeholder rule
     return params[0]->getImageElem(i)+1;
 }
 
@@ -36,8 +31,10 @@ inline const T RecursiveFunctionRule<T>::getInitValue()
     return x0;
 }
 
+// Removable stuff
+
 template<real T>
 inline const T RecursiveFunctionRule<T>::getFromPreviousInImage(FunctionRelation<T> **params, const size_t i) const
 {
-    return rule(params, i-1);
+    return next(params, i-1);
 }

@@ -1,13 +1,8 @@
 template <real T>
 inline const T FunctionRule<T>::operator()(const T x)
 {
+    // placeholder method
     return x;
-}
-
-template<real T>
-inline const T FunctionRule<T>::rule(FunctionRelation<T> **params, const unsigned int i) const
-{
-    return params[0]->getDomainElem(i)+1;
 }
 
 template <real T>
@@ -36,6 +31,8 @@ template <real T>
 const T FunctionRule<T>::newtonSolve(const T x0, const unsigned int iter, const T dx)
 {
     T sol = x0;
+
+    // Iteratively approximate solution
     for(int i = 0; i <= iter; i++)
     {
         sol -= this->operator()(sol)/this->der(sol, dx);

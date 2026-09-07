@@ -1,13 +1,16 @@
+#include "FunctionRelation.hxx"
 template<real T>
 FunctionRelation<T>::FunctionRelation(size_t I, size_t J)
 {
     this->I = I;
     this->J = J;
 
+    // specify size of jagged array
     domain = new T*[I];
     image = new T*[I];
     for (unsigned int i=0; i<I; i++)
     {
+        // specify size of the array contained
         domain[i] = new T [J];
         image[i] = new T [J];
         // std::cout << "Array assigned" << std::endl;
@@ -21,8 +24,10 @@ FunctionRelation<T>::FunctionRelation(size_t I, size_t J, T **domain)
 {
     this->I = I;
     this->J = J;
+    // set the domain (it will be destroyed in another instance, be careful with this)
     this->domain = domain;
 
+    // just set the image
     image = new T*[I];
     for (unsigned int i=0; i<I; i++)
     {
@@ -33,13 +38,14 @@ FunctionRelation<T>::FunctionRelation(size_t I, size_t J, T **domain)
 template<real T>
 FunctionRelation<T>::~FunctionRelation()
 {
+    // delete image
     for (unsigned int i=0; i<I; i++)
     {
         delete[] image[i];
     }
     delete[] image;
 
-    // if memory was allocated in this object delete it
+    // if memory was allocated in this instance delete it
     if (domainAllocated)
     {
         for (unsigned int i=0; i<I; i++)
@@ -48,13 +54,12 @@ FunctionRelation<T>::~FunctionRelation()
         }
         delete[] domain;
     }
-
-    
 }
 
 template<real T>
-void FunctionRelation<T>::populateDomainFromInterval(const T x0, const T x1)
+void FunctionRelation<T>::PopulateDomainFromInterval(const T x0, const T x1)
 {
+    // iteratively assign values to the domain
     const T dx = (x1-x0)/((T)I*(T)J);
     for (unsigned int i=0; i<I; i++)
     { 
@@ -70,7 +75,7 @@ void FunctionRelation<T>::populateDomainFromInterval(const T x0, const T x1)
 }
 
 template<real T>
-void FunctionRelation<T>::populateDomainFromSpacing(const T x0, const T x1)
+void FunctionRelation<T>::PopulateDomainFromSpacing(const T x0, const T x1)
 {
     for (unsigned int i=0; i<I; i++)
     { 
@@ -86,7 +91,7 @@ void FunctionRelation<T>::populateDomainFromSpacing(const T x0, const T x1)
 }
 
 template<real T>
-void FunctionRelation<T>::populateMultidimDomainFromInterval(const T x0, const T x1, unsigned int* shape, const unsigned int dim, unsigned int max_dims)
+void FunctionRelation<T>::PopulateMultidimDomainFromInterval(const T x0, const T x1, unsigned int* shape, const unsigned int dim, unsigned int max_dims)
 {
     int expected_elem_num = 1;
     for (int i=0; i<max_dims; i++)
@@ -113,13 +118,14 @@ void FunctionRelation<T>::populateMultidimDomainFromInterval(const T x0, const T
 }
 
 template<real T>
-void FunctionRelation<T>::populateImageFromSimpleFunc(FunctionRule<T> &f)
+void FunctionRelation<T>::PopulateImageFromSimpleFunc(FunctionRule<T> &f)
 {
+    // give a value in the image for every element in the domain
     for (unsigned int i=0; i<I; i++)
     { 
         for (unsigned int j=0; j<J; j++)
         {
-            image[i][j] = f(getDomainElem((unsigned int)(i*J)+j));
+            image[i][j] = f(GetDomainElem((unsigned int)(i*J)+j));
         }
     }
 
@@ -127,9 +133,11 @@ void FunctionRelation<T>::populateImageFromSimpleFunc(FunctionRule<T> &f)
 }
 
 template<real T>
-void FunctionRelation<T>::populateImageFromSingleRecursiveFunc(RecursiveFunctionRule<T> &f, FunctionRelation<T> **func)
+void FunctionRelation<T>::PopulateImageFromSingleRecursiveFunc(RecursiveFunctionRule<T> &f, FunctionRelation<T> **func)
 {
+    // initialize first value
     image[0][0] = f.getInitValue();
+    //initialize all elements from previous values
     for (unsigned int j=1; j<J; j++)
     {
         image[0][j] = f.getFromPreviousInImage(func, (unsigned int)(j));
@@ -145,86 +153,90 @@ void FunctionRelation<T>::populateImageFromSingleRecursiveFunc(RecursiveFunction
     imageAssigned = true;
 }
 
-template<real T>
-inline void FunctionRelation<T>::modifyFromSimpleFunc(FunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
+template <real T>
+inline void FunctionRelation<T>::ModifyFromSimpleFunc(FunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
-    setImageElem(f.rule(params, i), i);
+    // setImageElem(f());
 }
 
-template<real T>
-inline void FunctionRelation<T>::modifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
+template <real T>
+inline void FunctionRelation<T>::ModifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
+    // set image element using specified index
     setImageElem(f.getFromPreviousInImage(params, i), i);
 }
 
 template<real T>
-inline void FunctionRelation<T>::modifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
+inline void FunctionRelation<T>::ModifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
+    // set image element using the last element in the image
     setImageElem(f.getFromPreviousInImage(params, (unsigned int)(I*J)), i);
 }
 
 template<real T>
-inline const T FunctionRelation<T>::getDomainElem(const unsigned int i) const
+inline const T FunctionRelation<T>::GetDomainElem(const unsigned int i) const
 {
     return domain[(unsigned int)(i/J)][(unsigned int)(i%J)];
 }
 
 template<real T>
-inline const T FunctionRelation<T>::getImageElem(const unsigned int i) const
+inline const T FunctionRelation<T>::GetImageElem(const unsigned int i) const
 {
     return image[(unsigned int)(i/J)][(unsigned int)(i%J)];
 }
 
+// Return image and domains as ptrs. Use with care
+// ===============================================
 template<real T>
-inline T** FunctionRelation<T>::getDomain() const
+inline T** FunctionRelation<T>::GetDomain() const
 {
     return domain;
 }
 
 template<real T>
-inline T** FunctionRelation<T>::getImage() const
+inline T** FunctionRelation<T>::GetImage() const
 {
     return image;
 }
 
 template<real T>
-inline const bool FunctionRelation<T>::isDomainAssigned() const
+inline const bool FunctionRelation<T>::IsDomainAssigned() const
 {
     return domainAssigned;
 }
 
 template<real T>
-inline const bool FunctionRelation<T>::isDomainAllocated() const
+inline const bool FunctionRelation<T>::IsDomainAllocated() const
 {
     return domainAllocated;
 }
 
 template<real T>
-inline const T FunctionRelation<T>::getdx() const
+inline const T FunctionRelation<T>::Getdx() const
 {
     return dx;
 }
 
 template<real T>
-inline const size_t FunctionRelation<T>::getI() const
+inline const size_t FunctionRelation<T>::GetI() const
 {
     return I;
 }
 
 template<real T>
-inline const size_t FunctionRelation<T>::getJ() const
+inline const size_t FunctionRelation<T>::GetJ() const
 {
     return J;
 }
 
 template<real T>
-inline void FunctionRelation<T>::setDomainElem(const T x, const unsigned int i)
+inline void FunctionRelation<T>::SetDomainElem(const T x, const unsigned int i)
 {
     domain[(unsigned int)(i/J)][(unsigned int)(i%J)] = x;
 }
 
 template<real T>
-inline void FunctionRelation<T>::setImageElem(const T x, const unsigned int i)
+inline void FunctionRelation<T>::SetImageElem(const T x, const unsigned int i)
 {
     image[(unsigned int)(i/J)][(unsigned int)(i%J)] = x;
 }

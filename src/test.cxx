@@ -112,19 +112,19 @@ int main(int argc, char *argv[])
     FunctionManager<float, XNaive> Y = FunctionManager<float, XNaive>(100, 100, 0.5f);
     
     unsigned int shape[2] = {100, 100};
-    FunctionRelation<float> *params[2] = {X.getRelation(), Y.getRelation()};
+    FunctionRelation<float> *params[2] = {&X, &Y};
 
-    X.InitMultidimDomainFromInterval(0.0f, 100.0f, shape, 0, 2);
-    Y.InitMultidimDomainFromInterval(0.0f, 100.0f, shape, 1, 2);
+    X.PopulateMultidimDomainFromInterval(0.0f, 100.0f, shape, 0, 2);
+    Y.PopulateMultidimDomainFromInterval(0.0f, 100.0f, shape, 1, 2);
     for (int i=0;i<10000;i++)
     {
-        X.modifyFromCurrent(i, params);
-        Y.modifyFromCurrent(i, params);
+        X.ModifyFromCurrent(i, params);
+        Y.ModifyFromCurrent(i, params);
     }
     // print them out
     for (int i=0;i<100;i++)
     {
-        std::cout << X.getDomainElem(i) << "," << Y.getDomainElem(i) << " ";
+        std::cout << X.GetDomainElem(i) << "," << Y.GetDomainElem(i) << " ";
     }
     /*
     // or put in file
