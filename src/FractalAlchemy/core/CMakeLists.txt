@@ -4,13 +4,6 @@ add_library(FractalAlchemy_Templates INTERFACE)
 target_sources(FractalAlchemy_Templates INTERFACE
                         FunctionRule.hxx
                         FunctionRelation.hxx
-                        RecursiveFunctionRule.hxx)
-
-add_library(FractalAlchemy INTERFACE)
-
-# include directories needed
-target_include_directories(FractalAlchemy INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
-# target_link_libraries(FractalAlchemy_Templates INTERFACE FA_compiler_flags)
-target_link_libraries(FractalAlchemy INTERFACE FA_compiler_flags)
-target_link_libraries(FractalAlchemy INTERFACE FractalAlchemy_Templates)
+                        RecursiveFunctionRule.hxx
+                        FunctionManager.hxx
+                        RecursiveFunctionManager.hxx)

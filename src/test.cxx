@@ -26,119 +26,67 @@
 #include "display/Shader.h"
 #include "display/Camera.h"
 
+#include "rendering/RecursiveFunction3DLineRenderer.hxx"
+
 #include "RootDir.h"
 
 #define SHADER(filename) (std::string(SHADER_DIR) + std::string(filename)).c_str()
 #define TEXTURE(filename) (std::string(ROOT_DIR) + std::string("res/textures/") + std::string(filename)).c_str()
 
-float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+// First create instances of the Lorentz Attractor's differential equations. The parameters of the equation are stored in the instances
+// ====================================================================================================================================
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
-
-glm::vec3 cubePositions[] = {
-    glm::vec3( 0.0f,  0.0f,  0.0f), 
-    glm::vec3( 2.0f,  5.0f, -15.0f), 
-    glm::vec3(-1.5f, -2.2f, -2.5f),  
-    glm::vec3(-3.8f, -2.0f, -12.3f),  
-    glm::vec3( 2.4f, -0.4f, -3.5f),  
-    glm::vec3(-1.7f,  3.0f, -7.5f),  
-    glm::vec3( 1.3f, -2.0f, -2.5f),  
-    glm::vec3( 1.5f,  2.0f, -2.5f), 
-    glm::vec3( 1.5f,  0.2f, -1.5f), 
-    glm::vec3(-1.3f,  1.0f, -1.5f)  
-};
-
-unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 2,   // first triangle
-    2, 3, 0,
-};
-
+// Create instance of the function returning the dx/dt: dx/dt= sigma*(y-x)
+//                                                      ==================
 template<real T>
-class XNaive : public FunctionRule<T>
+class XLorentz : public RecursiveFunctionRule<T>
 {
 public:
-XNaive(const T sigma) : FunctionRule<T>(), sigma(sigma) {};
-    inline const T rule(FunctionRelation<T> **params, const unsigned int i) const override
+    XLorentz(const T x0, const T dt, const T sigma, const T ro, const T beta) : RecursiveFunctionRule<T>(x0), dt(dt), sigma(sigma), ro(ro), beta(beta) {};
+    inline const T Next(FunctionRelation<T> **params, const unsigned int i) const override
     {
-        return params[0]->GetDomainElem(i)*params[1]->GetDomainElem(i)*sigma;
+        return params[0]->GetImageElem(i) + (dt*sigma*(params[1]->GetImageElem(i) - params[0]->GetImageElem(i)));
     }
 private:
-    const T sigma;
+    const T dt, sigma, ro, beta;
 };
+
+// Create instance of the function returning the dy/dt: dy/dt= x*(ro-z) - y
+//                                                      ===================
+template<real T>
+class YLorentz : public RecursiveFunctionRule<T>
+{
+public:
+    YLorentz(const T x0, const T dt, const T sigma, const T ro, const T beta) : RecursiveFunctionRule<T>(x0), dt(dt), sigma(sigma), ro(ro), beta(beta) {};
+    inline const T Next(FunctionRelation<T> **params, const unsigned int i) const override
+    {
+        return params[1]->GetImageElem(i) + (dt*(params[0]->GetImageElem(i) * (ro-(params[2]->GetImageElem(i))) - (params[1]->GetImageElem(i))));
+    }
+private:
+    const T dt, sigma, ro, beta;
+};
+
+// Create instance of the function returning the dz/dt: dz/dt= xy - beta*z
+//                                                      ==================
+template<real T>
+class ZLorentz : public RecursiveFunctionRule<T>
+{
+public:
+    ZLorentz(const T x0, const T dt, const T sigma, const T ro, const T beta) : RecursiveFunctionRule<T>(x0), dt(dt), sigma(sigma), ro(ro), beta(beta) {};
+    inline const T Next(FunctionRelation<T> **params, const unsigned int i) const override
+    {
+        // std::cout << "x: " << params[0]->GetImageElem(i) << " y: " << params[1]->GetImageElem(i) << "z: " << params[2]->GetImageElem(i) << std::endl;
+        // std::cout << "dx: " << (dt*(params[0]->GetImageElem(i)*params[1]->GetImageElem(i) - beta * params[2]->GetImageElem(i))) << std::endl;
+        return params[2]->GetImageElem(i) + (dt*(params[0]->GetImageElem(i)*params[1]->GetImageElem(i) - beta * params[2]->GetImageElem(i)));
+    }
+private:
+    const T dt, sigma, ro, beta;
+};
+
 
 int main(int argc, char *argv[])
 {
-    FunctionManager<float, XNaive> X = FunctionManager<float, XNaive>(100, 100, 2.0f);
-    FunctionManager<float, XNaive> Y = FunctionManager<float, XNaive>(100, 100, 0.5f);
-    
-    unsigned int shape[2] = {100, 100};
-    FunctionRelation<float> *params[2] = {&X, &Y};
-
-    X.PopulateMultidimDomainFromInterval(0.0f, 100.0f, shape, 0, 2);
-    Y.PopulateMultidimDomainFromInterval(0.0f, 100.0f, shape, 1, 2);
-    for (int i=0;i<10000;i++)
-    {
-        X.ModifyFromCurrent(i, params);
-        Y.ModifyFromCurrent(i, params);
-    }
-    // print them out
-    for (int i=0;i<100;i++)
-    {
-        std::cout << X.GetDomainElem(i) << "," << Y.GetDomainElem(i) << " ";
-    }
-    /*
-    // or put in file
-    std::ofstream SampleFile("lorentz_attractor.csv");
-    for (int i=0;i<10000;i++)
-    {
-        SampleFile << X.getImageElem(i) << "," << std::endl;
-    }
-
-    // close the file
-    SampleFile.close();
-    std::cout << "Creating file - DONE" << std::endl;
-    */
-
 	// Initialize glfw
 	glfwInit();
 
@@ -167,86 +115,11 @@ int main(int argc, char *argv[])
 	// specify where the viewport should be
     glViewport(0, 0, wWidth, wHeight);
 
-    // Create and bind the vao
-    VAO VAO = class VAO();
-    VAO.Bind();
-
-    // create the other array buffers
-    VBO VBO = class VBO(vertices, sizeof(vertices), GL_STATIC_DRAW);
-
-    // Configuring attribute reads
-    VAO.LinkAttrib(VBO, 0, 3, GL_FLOAT, 5*sizeof(float), (void*)0);
-    VAO.LinkAttrib(VBO, 1, 2, GL_FLOAT, 5*sizeof(float), (void*)(3*sizeof(float)));
-
-    // create texture
-    unsigned int texture;
-    glGenTextures(1, &texture);
-
-    // bind texture
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    // set texture wrapping/filtering options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // importing image for textures
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(TEXTURE("container.jpg"), &width, &height, &nrChannels, 0);
-    if(data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-
-    // free the image data
-    stbi_image_free(data);
-
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-
-    // bind texture
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    // set texture wrapping/filtering options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // importing image for textures
-    width, height, nrChannels;
-    data = stbi_load(TEXTURE("awesomeface.png"), &width, &height, &nrChannels, 0);
-    if(data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-
-    // free the image data
-    stbi_image_free(data);
-
-    // Shader program
-    Shader defaultShader = Shader(SHADER("default.vert"), SHADER("default.frag"));
-    defaultShader.use();
-
-    float faceness = 0.0f, faceSpeed = 0.001f;
-
-    defaultShader.setInt("ourTexture", 0);
-    defaultShader.setInt("faceTexture", 1);
-    defaultShader.setFloat("faceness", faceness);
+    // Create the Lorentz renderer
+    // ===========================
+    float dt = 0.001f, sigma = 10.0f, ro = 28.0f, beta = 8.0f/3.0f;
+    unsigned int I = 2, J = 1000;
+    RecursiveFunction3DLineRenderer<float, XLorentz, YLorentz, ZLorentz> renderer = RecursiveFunction3DLineRenderer<float, XLorentz, YLorentz, ZLorentz>(I, J, 1.0f, 0.0f, 100.0f, dt, sigma, ro, beta);
 
     Camera camera = Camera(glm::vec3(0.0f, 0.0f, -3.0f), wWidth, wHeight);
 
@@ -256,40 +129,20 @@ int main(int argc, char *argv[])
 	while (!glfwWindowShouldClose(window))
 	{
         glfwPollEvents();
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        {
-            if (faceness<1.0f)
-            faceness += faceSpeed;
-        }
-        else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        {
-            if (faceness>0.0f)
-            faceness -= faceSpeed;
-        }
         camera.processInput(window);
         // Specify color of the background
-        glClearColor(0.0f, 0.13f, 0.17f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // Clean the back buffer and assign the new color to it
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // send uniform matrices for 3d viewing
         camera.updateViewProj(45.0f, 0.5f, 100.0f);
-        camera.viewToShader("view", defaultShader);
-        camera.projToShader("projection", defaultShader);
-
-        VAO.Bind();
-        for(unsigned int i = 0; i<10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20 * i;
-            model = glm::rotate(model, angle, glm::vec3(0.5f, 1.0f, 0.0f));
-            defaultShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        // =======
+        camera.viewToShader("view", renderer.GetShader());
+        camera.projToShader("projection", renderer.GetShader());
+        
+        renderer.Render(camera);
+        renderer.SafeUpdateImagesBy(1);
+        renderer.SafeUpdateVBOs();
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
@@ -297,8 +150,6 @@ int main(int argc, char *argv[])
 		glfwPollEvents();
 	}
 
-    VAO.Delete();
-    VBO.Delete();
 	// destroy window (closes it) and terminates glfw
 	glfwDestroyWindow(window);
 	glfwTerminate();

@@ -136,17 +136,17 @@ template<real T>
 void FunctionRelation<T>::PopulateImageFromSingleRecursiveFunc(RecursiveFunctionRule<T> &f, FunctionRelation<T> **func)
 {
     // initialize first value
-    image[0][0] = f.getInitValue();
+    image[0][0] = f.GetInitValue();
     //initialize all elements from previous values
     for (unsigned int j=1; j<J; j++)
     {
-        image[0][j] = f.getFromPreviousInImage(func, (unsigned int)(j));
+        image[0][j] = f.GetFromPreviousInImage(func, (unsigned int)(j));
     }
     for (unsigned int i=1; i<I; i++)
     { 
         for (unsigned int j=0; j<J; j++)
         {
-            image[i][j] = f.getFromPreviousInImage(func, (unsigned int)((i*J)+j));
+            image[i][j] = f.GetFromPreviousInImage(func, (unsigned int)((i*J)+j));
         }
     }
 
@@ -163,14 +163,29 @@ template <real T>
 inline void FunctionRelation<T>::ModifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
     // set image element using specified index
-    this->SetImageElem(f.getFromPreviousInImage(params, i), i);
+    this->SetImageElem(f.GetFromPreviousInImage(params, i), i);
+}
+
+template <real T>
+inline void FunctionRelation<T>::ModifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, const unsigned int j, FunctionRelation<T> **params)
+{
+    // set image element using specified index
+    // std::cout << "Finished getfromprevious in image i = " << i << " j = " << j <<std::endl;
+    this->SetImageElem(f.GetFromPreviousInImage(params, i*J+j), i, j);
 }
 
 template<real T>
 inline void FunctionRelation<T>::ModifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params)
 {
     // set image element using the last element in the image
-    this->SetImageElem(f.getFromPreviousInImage(params, (unsigned int)(I*J)), i);
+    this->SetImageElem(f.GetFromPreviousInImage(params, (unsigned int)(I*J)), i);
+}
+
+template <real T>
+inline void FunctionRelation<T>::ModifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, const unsigned int j, FunctionRelation<T> **params)
+{
+    // set image element using the last element in the image
+    this->SetImageElem(f.GetFromPreviousInImage(params, (unsigned int)(I*J)), i, j);
 }
 
 template<real T>
@@ -179,10 +194,22 @@ inline const T FunctionRelation<T>::GetDomainElem(const unsigned int i) const
     return domain[(unsigned int)(i/J)][(unsigned int)(i%J)];
 }
 
+template <real T>
+inline const T FunctionRelation<T>::GetDomainElem(const unsigned int i, const unsigned int j) const
+{
+    return domain[i][j];
+}
+
 template<real T>
 inline const T FunctionRelation<T>::GetImageElem(const unsigned int i) const
 {
     return image[(unsigned int)(i/J)][(unsigned int)(i%J)];
+}
+
+template <real T>
+inline const T FunctionRelation<T>::GetImageElem(const unsigned int i, const unsigned int j) const
+{
+    return image[i][j];
 }
 
 // Return image and domains as ptrs. Use with care
@@ -197,6 +224,26 @@ template<real T>
 inline T** FunctionRelation<T>::GetImage() const
 {
     return image;
+}
+
+template <real T>
+inline T *FunctionRelation<T>::GetDomainArray(const unsigned int i) const
+{
+    if (!i<this->I)
+    {
+        std::cerr << "The index entered " << i << " is out of bound of the size of the array with I = " << this->I << std::endl;
+    }
+    return this->domain[i];
+}
+
+template <real T>
+inline T *FunctionRelation<T>::GetImageArray(const unsigned int i) const
+{
+    if ( !(i < (int)(this->I)) )
+    {
+        std::cerr << "The index entered " << i << " is out of bound of the size of the array with I = " << this->I << std::endl;
+    }
+    return this->image[i];
 }
 
 template<real T>
@@ -235,10 +282,22 @@ inline void FunctionRelation<T>::SetDomainElem(const T x, const unsigned int i)
     domain[(unsigned int)(i/J)][(unsigned int)(i%J)] = x;
 }
 
+template <real T>
+inline void FunctionRelation<T>::SetDomainElem(const T x, const unsigned int i, const unsigned int j)
+{
+    domain[i][j] = x; 
+}
+
 template<real T>
 inline void FunctionRelation<T>::SetImageElem(const T x, const unsigned int i)
 {
     image[(unsigned int)(i/J)][(unsigned int)(i%J)] = x;
+}
+
+template <real T>
+inline void FunctionRelation<T>::SetImageElem(const T x, const unsigned int i, const unsigned int j)
+{
+    image[i][j] = x;
 }
 
 template<real T>

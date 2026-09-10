@@ -7,7 +7,7 @@ inline const T FunctionRule<T>::operator()(const T x)
 }
 
 template<real T>
-inline const T FunctionRule<T>::rule(FunctionRelation<T> **params, const unsigned int i) const
+inline const T FunctionRule<T>::Rule(FunctionRelation<T> **params, const unsigned int i) const
 {
     // placeholder rule
     return params[0]->GetImageElem(i);
@@ -22,7 +22,7 @@ inline const T FunctionRule<T>::d(const T x, const T dx)
 }
 
 template <real T>
-const T FunctionRule<T>::intgr(const T x0, const T x1, const T dx)
+const T FunctionRule<T>::Intgr(const T x0, const T x1, const T dx)
 {
     T A = 0.0;
     const T iter = (x1 - x0)/dx; // Number of iterations
@@ -37,7 +37,7 @@ const T FunctionRule<T>::intgr(const T x0, const T x1, const T dx)
 }
 
 template <real T>
-const T FunctionRule<T>::newtonSolve(const T x0, const unsigned int iter, const T dx)
+const T FunctionRule<T>::NewtonSolve(const T x0, const unsigned int iter, const T dx)
 {
     T sol = x0;
 

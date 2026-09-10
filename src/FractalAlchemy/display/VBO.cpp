@@ -15,11 +15,13 @@ VBO::VBO(GLfloat* vertices, GLsizeiptr size, GLenum usage)
 
 void VBO::Allocate(GLsizeiptr tot_size, GLenum usage)
 {
+    this->Bind();
     glBufferData(GL_ARRAY_BUFFER, tot_size, nullptr, GL_STATIC_DRAW);
 }
 
 void VBO::SubData(GLfloat* vertices, GLintptr offset, GLsizeiptr size, GLenum usage)
 {
+    this->Bind();
     glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices);
 }
 

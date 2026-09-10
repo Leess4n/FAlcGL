@@ -1,12 +1,5 @@
 add_library(FractalAlchemy_Templates INTERFACE)
-
-# specify header files
-target_sources(FractalAlchemy_Templates INTERFACE
-                        core/FunctionRule.hxx
-                        core/FunctionRelation.hxx
-                        core/FunctionManager.hxx
-                        core/RecursiveFunctionRule.hxx
-                        core/RecursiveFunctionManager.hxx)
+add_library(FractalAlchemy_Rendering INTERFACE)
 
 add_library(FractalAlchemy
                     Utility.cpp
@@ -28,3 +21,4 @@ target_include_directories(FractalAlchemy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # target_link_libraries(FractalAlchemy_Templates INTERFACE FA_compiler_flags)
 target_link_libraries(FractalAlchemy INTERFACE FA_compiler_flags)
 target_link_libraries(FractalAlchemy INTERFACE FractalAlchemy_Templates)
+target_link_libraries(FractalAlchemy INTERFACE FractalAlchemy_Rendering)

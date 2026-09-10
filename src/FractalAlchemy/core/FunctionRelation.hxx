@@ -36,13 +36,19 @@ public:
     // modify image
     void ModifyFromSimpleFunc(FunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params);                              // modifies the image using the rule of `f` to the element of index `i` in the domain
     inline void ModifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params); // modifies an element in the image at index `i` using rule `f` on the previous value
+    inline void ModifyFromPrevRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, const unsigned int j, FunctionRelation<T> **params);
     inline void ModifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, FunctionRelation<T> **params); // modifies the last element in the image at index `i` using rule `f` on the previous value
-    
+    inline void ModifyFromLastRecursiveFunc(const RecursiveFunctionRule<T> &f, const unsigned int i, const unsigned int j, FunctionRelation<T> **params); 
+
     // getter functions
     inline const T GetDomainElem(const unsigned int i) const;
+    inline const T GetDomainElem(const unsigned int i, const unsigned int j) const;
     inline const T GetImageElem(const unsigned int i) const;
+    inline const T GetImageElem(const unsigned int i, const unsigned int j) const;
     inline T** GetDomain() const;
     inline T** GetImage() const;
+    inline T* GetDomainArray(const unsigned int i) const;
+    inline T* GetImageArray(const unsigned int i) const;
     inline const bool IsDomainAssigned() const;
     inline const bool IsDomainAllocated() const;
     inline const T Getdx() const;
@@ -51,7 +57,9 @@ public:
 
     // setter functions
     inline void SetDomainElem(const T x, const unsigned int i);
+    inline void SetDomainElem(const T x, const unsigned int i, const unsigned int j);
     inline void SetImageElem(const T x, const unsigned int i);
+    inline void SetImageElem(const T x, const unsigned int i, const unsigned int j);
 
 protected:
     const int getSkip(unsigned int* shape, unsigned int dim, unsigned int max_dim) const;

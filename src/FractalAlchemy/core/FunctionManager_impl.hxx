@@ -12,7 +12,7 @@ inline FunctionManager<T, Function>::FunctionManager(size_t I, size_t J) : Funct
 }
 
 template <real T, template <real> class Function>
-inline FunctionManager<T, Function>::FunctionManager(size_t I, size_t J, T **domain) : FunctionRelation(I, J, domain)
+inline FunctionManager<T, Function>::FunctionManager(size_t I, size_t J, T **domain) : FunctionRelation<T>(I, J, domain)
 {
 }
 
