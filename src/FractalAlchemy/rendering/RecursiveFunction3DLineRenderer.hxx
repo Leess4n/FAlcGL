@@ -51,7 +51,7 @@ public:
     int UnsafeUpdateImagesBy(const unsigned int i, const unsigned int span);
     int SafeUpdateImagesBy(const unsigned int span);
     void UpdateImagesFromLastElement();
-    int UnsafeUpdateVBOs(const unsigned int i, const unsigned int span);
+    void UnsafeUpdateVBOs(const unsigned int i, const unsigned int span);
     void SafeUpdateVBOs();
 
     Shader& GetShader();
@@ -68,8 +68,7 @@ private:
     Shader shader = Shader(SHADER("simple_3d_line.vert"), SHADER("simple_3d_line.frag"));
 
     // For safe plotting and updating
-    unsigned int currentVBOIndex = 0, currentImageIndex = 0, updateSpan = 0;
-    bool shouldUpdateFromLast = false;
+    unsigned int currentImageIndex = 0, updateSpan = 0;
     unsigned int I, J, totalSize;
 };
 

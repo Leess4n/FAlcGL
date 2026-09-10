@@ -36,15 +36,15 @@ RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, Recur
         VAOs.back().Bind();
 
         VBOsX.emplace_back(
-            managerX->GetImageArray(i), J, GL_DYNAMIC_DRAW
+            managerX->GetImageArray(i), J * sizeof(T), GL_DYNAMIC_DRAW
         );
 
         VBOsY.emplace_back(
-            managerY->GetImageArray(i), J, GL_DYNAMIC_DRAW
+            managerY->GetImageArray(i), J * sizeof(T), GL_DYNAMIC_DRAW
         );
 
         VBOsZ.emplace_back(
-            managerZ->GetImageArray(i), J, GL_DYNAMIC_DRAW
+            managerZ->GetImageArray(i), J * sizeof(T), GL_DYNAMIC_DRAW
         );
 
         // Configuring attribute reads
@@ -73,10 +73,10 @@ void RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, 
     {
         VAOs[i].Bind();
         glLineWidth(1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(this->managerX->GetJ()));
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(J));
     }
 
-    VAOs[this->managerX->GetI() - 1].Unbind();
+    VAOs[I - 1].Unbind();
 }
 
 template<
@@ -163,14 +163,6 @@ int RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, R
     // do not allow for multiple cycles around the array
     assert(span <= totalSize);
     assert(span > 0);
-
-
-    // First do not allow to cycle the array if
-    // the VBO has to update, otherwise one is wasting compute.
-    if (shouldUpdateFromLast == true)
-    {
-        return 0;
-    }
     
     updateSpan += span;
     int firstUnsafeSpan = 0;
@@ -188,7 +180,6 @@ int RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, R
         // std::cout <<"first unsafe span"<<firstUnsafeSpan<<std::endl;
         UpdateImagesFromLastElement();
         UnsafeUpdateImagesBy(1, span - firstUnsafeSpan - 1);
-        shouldUpdateFromLast = true;
     }    
     else
     {
@@ -218,7 +209,7 @@ template <
     template <real> class RecursiveFunctionX,
     template <real> class RecursiveFunctionY,
     template <real> class RecursiveFunctionZ>
-int RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, RecursiveFunctionZ>::UnsafeUpdateVBOs(const unsigned int i, const unsigned int span)
+void RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, RecursiveFunctionZ>::UnsafeUpdateVBOs(const unsigned int i, const unsigned int span)
 {
     assert(span <= totalSize);
     assert(span > 0);
@@ -251,36 +242,19 @@ int RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, R
 
     // size of each array element
     unsigned int size = sizeof(T);
-    
-    // if the span is less than the amount needed to jump to the next array then
-    // return after a simple for loop.
-    if (clippedSpan<=startMissing)
+    unsigned int currentColumn = 0;
+    for (unsigned int n=0; n<I; n++)
     {
-        VBOsX[startColumn].SubData(this->managerX->GetImageArray(startColumn) + startRemainder, startRemainder*size, clippedSpan*size, GL_DYNAMIC_DRAW);
-        VBOsY[startColumn].SubData(this->managerY->GetImageArray(startColumn) + startRemainder, startRemainder*size, clippedSpan*size, GL_DYNAMIC_DRAW);
-        VBOsZ[startColumn].SubData(this->managerZ->GetImageArray(startColumn) + startRemainder, startRemainder*size, clippedSpan*size, GL_DYNAMIC_DRAW);
-        return clippedSpan;
-    }
+        currentColumn = (startColumn + n) % I;
+        VBOsX[n].SubData(this->managerX->GetImageArray(currentColumn) + startRemainder, 0, startMissing*size, GL_DYNAMIC_DRAW);
+        VBOsY[n].SubData(this->managerY->GetImageArray(currentColumn) + startRemainder, 0, startMissing*size, GL_DYNAMIC_DRAW);
+        VBOsZ[n].SubData(this->managerZ->GetImageArray(currentColumn) + startRemainder, 0, startMissing*size, GL_DYNAMIC_DRAW);
 
-    // Otherwise perform 3 loops
-    else
-    {
-        VBOsX[startColumn].SubData(this->managerX->GetImageArray(startColumn) + startRemainder, startRemainder*size, startMissing*size, GL_DYNAMIC_DRAW);
-        VBOsY[startColumn].SubData(this->managerY->GetImageArray(startColumn) + startRemainder, startRemainder*size, startMissing*size, GL_DYNAMIC_DRAW);
-        VBOsZ[startColumn].SubData(this->managerZ->GetImageArray(startColumn) + startRemainder, startRemainder*size, startMissing*size, GL_DYNAMIC_DRAW);
+        currentColumn = (startColumn + n + 1) % I;
+        VBOsX[n].SubData(this->managerX->GetImageArray(currentColumn), startMissing*size, startRemainder*size, GL_DYNAMIC_DRAW);
+        VBOsY[n].SubData(this->managerY->GetImageArray(currentColumn), startMissing*size, startRemainder*size, GL_DYNAMIC_DRAW);
+        VBOsZ[n].SubData(this->managerZ->GetImageArray(currentColumn), startMissing*size, startRemainder*size, GL_DYNAMIC_DRAW);
 
-        for (unsigned int n=1; n<endColumn-startColumn; n++)
-        {
-            VBOsX[startColumn + n].SubData(this->managerX->GetImageArray(startColumn + n), 0, J*size, GL_DYNAMIC_DRAW);
-            VBOsY[startColumn + n].SubData(this->managerY->GetImageArray(startColumn + n), 0, J*size, GL_DYNAMIC_DRAW);
-            VBOsZ[startColumn + n].SubData(this->managerZ->GetImageArray(startColumn + n), 0, J*size, GL_DYNAMIC_DRAW);
-        }
-        
-        VBOsX[endColumn].SubData(this->managerX->GetImageArray(endColumn), 0, endRemainder*size, GL_DYNAMIC_DRAW);
-        VBOsY[endColumn].SubData(this->managerY->GetImageArray(endColumn), 0, endRemainder*size, GL_DYNAMIC_DRAW);
-        VBOsZ[endColumn].SubData(this->managerZ->GetImageArray(endColumn), 0, endRemainder*size, GL_DYNAMIC_DRAW);
-
-        return clippedSpan;
     }
 }
 
@@ -291,21 +265,8 @@ template <
     template <real> class RecursiveFunctionZ>
 void RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, RecursiveFunctionZ>::SafeUpdateVBOs()
 {
-    int firstUnsafeSpan = 0;
-    if (shouldUpdateFromLast)
-    {
-        firstUnsafeSpan = UnsafeUpdateVBOs(currentVBOIndex, updateSpan);
-        UnsafeUpdateVBOs(0, updateSpan - firstUnsafeSpan);
-        currentVBOIndex = updateSpan - firstUnsafeSpan;
-    }
-    else 
-    {
-        firstUnsafeSpan = UnsafeUpdateVBOs(currentVBOIndex, updateSpan);
-        currentVBOIndex = firstUnsafeSpan;
-    }
+    UnsafeUpdateVBOs(currentImageIndex, updateSpan);
     updateSpan = 0;
-    currentVBOIndex = currentImageIndex;
-
     return ;
 }
 

@@ -118,7 +118,12 @@ int main(int argc, char *argv[])
     // Create the Lorentz renderer
     // ===========================
     float dt = 0.001f, sigma = 10.0f, ro = 28.0f, beta = 8.0f/3.0f;
-    unsigned int I = 2, J = 1000;
+    unsigned int I = 5, J = 5000;
+    if (argv[1] && argv[2]){
+        I = std::stof(argv[1]);
+        J = std::stof(argv[2]);
+    }
+    
     RecursiveFunction3DLineRenderer<float, XLorentz, YLorentz, ZLorentz> renderer = RecursiveFunction3DLineRenderer<float, XLorentz, YLorentz, ZLorentz>(I, J, 1.0f, 0.0f, 100.0f, dt, sigma, ro, beta);
 
     Camera camera = Camera(glm::vec3(0.0f, 0.0f, -3.0f), wWidth, wHeight);
