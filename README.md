@@ -1,9 +1,7 @@
 # Welcome to FAlc GL
 
 <center>
-  <video width="745" height="487" autoplay loop muted playsinline>
-    <source src="lorentz_video.mp4" type="video/mp4">
-  </video>
+    <img src="lorentz_video.gif" width="900" height="450">   
 </center>
 
 FAlcGL is a C++ library that displays mathematical objects in 3D using OpenGL. As of the last update, the library
