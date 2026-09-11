@@ -1,23 +1,21 @@
 # FAlcGL
 
-**Fractal Alchemy OpenGL**: A C++ library for rendering mathematical trajectories in 3D
+**FAlcGL** (Fractal Alchemy OpenGL) is a lightweight C++ library that allows the rendering of mathematical objects and dynamical systems in 3D using OpenGL.
 
 [![FAlcGL Demo](lorentz_video.gif)](https://github.com/Leess4n/FAlcGL)
 
-FAlcGL (Fractal Alchemy OpenGL) is a lightweight C++ library that visualizes mathematical objects and dynamical systems in 3D using OpenGL.
-
 ## Overview
 
-At its core, FAlcGL renders **trajectories** in space defined by recursive functions; the example video showcases the chaotic behaviour of the
-Lorenz attractor. The library separates mathematical formulation from rendering:
-- **Core**: Template-based mathematical engine handling functions, relations, and recursive systems
-- **Display layer**: OpenGL rendering pipeline (GLFW, GLAD, shaders) for real-time 3D visualization
+FAlcGL renders trajectories in space defined by recursive functions; the example video showcases the chaotic behaviour of the
+Lorenz attractor. The library separates the core functionality for storing and evaluating recursive functions from rendering:
+- **Core**: Template-based mathematical engine handling functions, relations, and recursive behaviour
+- **Display layer**: OpenGL for real-time 3D rendering
 
-## Key Features
+## Features
 
-- **Mathematical Flexibility**: Render arbitrary recursive systems including ODEs, maps, and custom trajectories
-- **Template Design**: Heavy use of templates for flexibility
-- **OpenGL 3.3+ Pipeline**: Direct control over VAOs, VBOs, EBOs with GLSL 330 shaders
+- **Flexibility**: Render arbitrary recursive systems including ODEs, maps, and custom trajectories
+- **Template Design**: Heavy use of templates for custom numerical typing
+- **OpenGL 3.3+ Pipeline**: Implementation of VAO, VBO, and EBO classes and GLSL 330 shaders
 - **Multidimensional Support**: Automatic domain generation for systems of arbitrary dimension
 
 ## How to Build
@@ -26,16 +24,16 @@ Lorenz attractor. The library separates mathematical formulation from rendering:
 git clone https://github.com/Leess4n/FAlcGL.git
 cd FAlcGL
 
-# Build with CMake (requires OpenGL, GLFW, GLM, stb_image)
+# Build with cmake (requires OpenGL, GLM, GLFW, stb_image)
 mkdir build
 cmake -S . -B build
 cmake --build build
 ```
 
-The default build produces `FAlcGL.exe` (Windows) or `FAlcGL` (Unix), which runs the **Lorenz attractor** demo. This executable is found
+The default build produces the **Lorenz attractor** demo. The built executable is `FAlcGL.exe` (Windows) or `FAlcGL` (Unix) and is found
 in `build/Debug/`.
 
-## Demo: Lorenz Attractor
+## Demo: the Lorenz Attractor
 
 The test program (`src/test.cxx`) visualizes the solution of Lorenz attractor:
 ```
@@ -44,13 +42,13 @@ dy/dt = x(ρ − z) − y
 dz/dt = xy − βz
 ```
 
-With classic parameters σ=10, ρ=28, β=8/3, and an integration step of dt=0.001.
+With parameters σ=10, ρ=28, β=8/3, and an integration step of dt=0.001.
 
-The demo allows you to split the stored data in jagged arrays. The first optional parameter controls how many times the data is split
+The demo allows to split the stored data in jagged arrays. The first optional parameter controls how many times the data is split
 and the second parameter controls how many points are stored in each split segment.
 ```bash
-./FAlcGL           # Default: data is split in 5 arrays, each with 5000 points
-./FAlcGL 3 10000   # Custom: data is split in 3 arrays, each with 10000 points
+./build/Debug/FAlcGL                  # Default: data is split in 5 arrays, each with 5000 points
+./build/Debug/FAlcGL 3 10000          # Custom: data is split in 3 arrays, each with 10000 points
 ```
 
 Camera controls: Mouse to rotate view, WASD to move (hold SHIFT to go faster), scroll to zoom.
