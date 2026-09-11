@@ -1,4 +1,4 @@
-# Welcome to FAlc GL
+# Welcome to FAlcGL
 
 <center>
     <img src="lorentz_video.gif" width="900" height="450">   
