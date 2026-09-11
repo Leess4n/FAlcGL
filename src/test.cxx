@@ -126,7 +126,8 @@ int main(int argc, char *argv[])
     
     RecursiveFunction3DLineRenderer<float, XLorentz, YLorentz, ZLorentz> renderer = RecursiveFunction3DLineRenderer<float, XLorentz, YLorentz, ZLorentz>(I, J, 1.0f, 0.0f, 100.0f, dt, sigma, ro, beta);
 
-    Camera camera = Camera(glm::vec3(0.0f, 0.0f, -3.0f), wWidth, wHeight);
+    glm::vec3 center = glm::vec3(-1,25,2), orientation;
+    Camera camera = Camera(glm::vec3(-40.0f, 25.0f, 39.0f), wWidth, wHeight);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -139,6 +140,10 @@ int main(int argc, char *argv[])
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // Clean the back buffer and assign the new color to it
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        orientation = center - camera.getCurrentPosition();
+        camera.translate(0.0005f * glm::cross(glm::normalize(glm::vec3(0.0f,1.0f,1.0f)), orientation));
+        camera.updateOrientation(orientation);
 
         // send uniform matrices for 3d viewing
         camera.updateViewProj(45.0f, 0.5f, 100.0f);

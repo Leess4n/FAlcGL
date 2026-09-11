@@ -110,6 +110,11 @@ void Camera::updateOrientation(glm::vec3 newOrientation)
     updateUp();
 }
 
+glm::vec3 Camera::getCurrentPosition()
+{
+    return pos;
+}
+
 void Camera::updateUp()
 {
     up = glm::normalize(glm::cross(orientation, glm::cross(orientation, glm::vec3(0.0f, 1.0f, 0.0f))));

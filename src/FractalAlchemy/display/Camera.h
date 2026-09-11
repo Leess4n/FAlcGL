@@ -21,10 +21,13 @@ public:
     const void projToShader(const char* uniformName, Shader shader) const;
     const void updateSpeedAndSens();
 
-private:
     void updatePos(glm::vec3 newPos);
     void translate(glm::vec3 offset);
     void updateOrientation(glm::vec3 newOrientation);
+
+    glm::vec3 getCurrentPosition();
+
+private:
     void updateUp();
 
 private:

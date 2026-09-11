@@ -1,12 +1,24 @@
 # Welcome to FAlc GL
 
-This is a C++ library that displays mathematical objects in 3D using OpenGL.
+<center>
+  <video width="745" height="487" autoplay loop muted playsinline>
+    <source src="lorentz_video.mp4" type="video/mp4">
+  </video>
+</center>
 
-## Current Functionality
+FAlcGL is a C++ library that displays mathematical objects in 3D using OpenGL. As of the last update, the library
+allows to render any type of trajectory in space and evolve it in time. It makes use of jagged arrays that allow
+to split large amounts of data across memory. It also makes it easy to create recursive functions (or systems
+of recursive functions) and evaluate them on the domain of choice. The template classes of the core library
+allow for flexibility in development.
 
- - Numerical domains and images of multi-dimensional functions
- - Evaluation of recursive functions in an optimized way
- - 3D display
+## Build Instructions
 
-## Status
-Currently work-in-progress.
+The library can be built by running the cmake commands:
+
+```sh
+cmake -S . -B build
+cmake --build build
+```
+
+By default this builds the file `src/text.cxx`.

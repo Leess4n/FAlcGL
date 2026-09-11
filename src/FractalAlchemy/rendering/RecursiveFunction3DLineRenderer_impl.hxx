@@ -72,7 +72,7 @@ void RecursiveFunction3DLineRenderer<T, RecursiveFunctionX, RecursiveFunctionY, 
     for (size_t i = 0; i < this->managerX->GetI(); ++i)
     {
         VAOs[i].Bind();
-        glLineWidth(1.0f);
+        glLineWidth(2.0f);
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(J));
     }
 
