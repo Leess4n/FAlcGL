@@ -14,7 +14,7 @@ Lorenz attractor. The library separates the core functionality for storing and e
 ## Features
 
 - **Flexibility**: Render arbitrary recursive systems including ODEs, maps, and custom trajectories
-- **Template Design**: Heavy use of templates for custom numerical typing
+- **Template Design**: Heavy use of templates for custom numerical typing (float/double/compatible custom types)
 - **OpenGL 3.3+ Pipeline**: Implementation of VAO, VBO, and EBO classes and GLSL 330 shaders
 - **Multidimensional Support**: Automatic domain generation for systems of arbitrary dimension
 
